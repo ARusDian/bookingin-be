@@ -22,7 +22,7 @@ return new class extends Migration
 
         Schema::create('room_types', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('hotel')->constrained('hotels');
+            $table->foreignId('hotel_id')->constrained('hotels');
             $table->string('name');
             $table->string('description');
             $table->integer('price');
@@ -31,7 +31,7 @@ return new class extends Migration
 
         Schema::create('room_facilities', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('hotel')->constrained('hotels');
+            $table->foreignId('hotel_id')->constrained('hotels');
             $table->string('name');
             $table->string('description');
             $table->timestamps();
@@ -40,7 +40,7 @@ return new class extends Migration
         Schema::create('room_type_facilities', function (Blueprint $table) {
             $table->id();
             $table->foreignId('room_type_id')->constrained('room_types');
-            $table->foreignId('room_facilities_id')->constrained('room_facilities');
+            $table->foreignId('room_facility_id')->constrained('room_facilities');
             $table->timestamps();
         });
 
@@ -51,6 +51,8 @@ return new class extends Migration
             $table->string('name');
             $table->string('description');
             $table->timestamps();
+
+            $table->unique(['hotel_id', 'name']);
         });
     }
 

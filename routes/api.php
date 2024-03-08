@@ -50,6 +50,36 @@ Route::middleware('auth:sanctum')->group(function() {
         Route::controller(Partner\PartnerController::class)->group(function() {
             Route::get('/get', 'get');
         });
+
+        Route::prefix('hotel')->group(function() {
+            Route::controller(Partner\HotelController::class)->group(function() {
+                Route::get('/get', 'getHotel');
+                Route::post('/create', 'createHotel');
+                Route::put('/edit/{id}', 'editHotel');
+                Route::delete('/delete/{id}', 'deleteHotel');
+
+                Route::prefix('facility')->group(function() {
+                    Route::get('/get', 'getFacilities');
+                    Route::post('/create', 'createFacility');
+                    Route::put('/edit/{id}', 'editFacility');
+                    Route::delete('/delete/{id}', 'deleteFacility');
+                });
+
+                Route::prefix('type')->group(function() {
+                    Route::get('/get', 'getRoomType');
+                    Route::post('/create', 'createRoomType');
+                    Route::put('/edit/{id}', 'editRoomType');
+                    Route::delete('/delete/{id}', 'deleteRoomType');
+                });
+
+                Route::prefix('room')->group(function() {
+                    Route::get('/get', 'getRoom');
+                    Route::post('/create', 'createRoom');
+                    Route::put('/edit/{id}', 'editRoom');
+                    Route::delete('/delete/{id}', 'deleteRoom');
+                });
+            });
+        });
     });
 
     Route::prefix('admin')->group(function() {
