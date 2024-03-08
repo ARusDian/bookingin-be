@@ -66,7 +66,7 @@ class HotelController extends Controller
         return response()->json([
             "code" => 201,
             "status" => "success",
-            "message" => "Hotel created successfully",
+            "message" => "Hotel berhasil dibuat",
         ], 201);
     }
 
@@ -110,7 +110,7 @@ class HotelController extends Controller
         return response()->json([
             "code" => 200,
             "status" => "success",
-            "message" => "Hotel deleted successfully",
+            "message" => "Hotel berhasil dihapus",
         ]);
     }
 
@@ -118,8 +118,14 @@ class HotelController extends Controller
     public function getFacilities(Request $request)
     {
         $request->validate([
-            "hotel_id" => "required|exists:hotels,id",
+            "hotel_id" => "required",
+            "page" => "nullable|integer|min:1",
+            "item" => "nullable|integer|min:1",
+            "search" => "nullable|string",
         ]);
+
+        $page = $request->input("page", 1);
+        $item = $request->input("item", 10);
 
         $hotel = Hotel::find($request->hotel_id);
 
@@ -131,19 +137,31 @@ class HotelController extends Controller
             throw new AuthorizationError("Anda tidak berhak mengakses fasilitas ini");
         }
 
-        $facilities = RoomFacility::where("id", $request->hotel_id)->get();
+        $facilities = RoomFacility::where("id", $request->hotel_id);
+
+        if ($request->has("search")) {
+            $facilities->where("name", "LIKE", "%{$request->input("search")}%");
+        }
+
+        $data = $facilities->paginate($item, ["*"], "page", $page);
 
         return response()->json([
             "code" => 200,
             "status" => "success",
-            "data" => $facilities,
+            "data" => $data->items(),
+            "meta" => [
+                "currentPage" => $page,
+                "item" => $item,
+                "totalItems" => $data->total(),
+                "totalPages" => $data->lastPage(),
+            ],
         ]);
     }
 
     public function createFacility(Request $request)
     {
         $request->validate([
-            'hotel_id' => 'required|exists:hotels,id',
+            'hotel_id' => 'required',
             'name' => 'required',
             'description' => 'required',
         ]);
@@ -167,7 +185,7 @@ class HotelController extends Controller
         return response()->json([
             "code" => 201,
             "status" => "success",
-            "message" => "Room facility created successfully",
+            "message" => "Fasilitas berhasil dibuat",
         ], 201);
     }
 
@@ -196,7 +214,7 @@ class HotelController extends Controller
         return response()->json([
             "code" => 200,
             "status" => "success",
-            "message" => "Facility updated successfully",
+            "message" => "Fasilitas berhasil diubah",
         ]);
     }
 
@@ -217,7 +235,7 @@ class HotelController extends Controller
         return response()->json([
             "code" => 200,
             "status" => "success",
-            "message" => "Facility deleted successfully",
+            "message" => "Fasilitas berhasil dihapus",
         ]);
     }
 
@@ -225,7 +243,7 @@ class HotelController extends Controller
     public function getRoomType(Request $request)
     {
         $request->validate([
-            "hotel_id" => "required|exists:hotels,id",
+            "hotel_id" => "required",
             "page" => "nullable|integer|min:1",
             "item" => "nullable|integer|min:1",
             "search" => "nullable|string",
@@ -268,7 +286,7 @@ class HotelController extends Controller
     public function createRoomType(Request $request)
     {
         $request->validate([
-            'hotel_id' => 'required|exists:hotels,id',
+            'hotel_id' => 'required',
             'name' => 'required',
             'description' => 'required',
             'price' => 'required|integer',
@@ -295,6 +313,8 @@ class HotelController extends Controller
             ]);
 
             if ($request->has("facilities")) {
+                // need validate facilities to his own hotel
+
                 $type->facilities()->attach($request->facilities);
             }
         });
@@ -302,7 +322,7 @@ class HotelController extends Controller
         return response()->json([
             "code" => 201,
             "status" => "success",
-            "message" => "Room type created successfully",
+            "message" => "Tipe ruangan berhasil dibuat",
         ], 201);
     }
 
@@ -338,7 +358,7 @@ class HotelController extends Controller
         return response()->json([
             "code" => 200,
             "status" => "success",
-            "message" => "Room type updated successfully",
+            "message" => "Tipe ruangan berhasil diubah",
         ]);
     }
 
@@ -360,7 +380,7 @@ class HotelController extends Controller
         return response()->json([
             "code" => 200,
             "status" => "success",
-            "message" => "Room type deleted successfully",
+            "message" => "Tipe ruangan berhasil dihapus",
         ]);
     }
 
@@ -368,7 +388,7 @@ class HotelController extends Controller
     public function getRoom(Request $request)
     {
         $request->validate([
-            "hotel_id" => "required|exists:hotels,id",
+            "hotel_id" => "required",
             "page" => "nullable|integer|min:1",
             "item" => "nullable|integer|min:1",
             "search" => "nullable|string",
@@ -401,7 +421,7 @@ class HotelController extends Controller
     public function createRoom(Request $request)
     {
         $request->validate([
-            'hotel_id' => 'required|exists:hotels,id',
+            'hotel_id' => 'required',
             'type_id' => 'required|exists:room_types,id',
             'name' => 'required',
             'description' => 'required',
@@ -433,7 +453,7 @@ class HotelController extends Controller
         return response()->json([
             "code" => 201,
             "status" => "success",
-            "message" => "Room created successfully",
+            "message" => "Ruangan berhasil dibuat",
         ], 201);
     }
 
@@ -444,10 +464,14 @@ class HotelController extends Controller
             'description' => 'required',
         ]);
 
-        $room = Room::where("hotel_id", auth()->id())->find($id);
+        $room = Room::find($id);
 
         if (!$room) {
             throw new NotFoundError("Room tidak ditemukan");
+        }
+
+        if ($room->hotel->user_id !== auth()->id()) {
+            throw new AuthorizationError("Anda tidak berhak mengubah ruangan ini");
         }
 
         $room->update([
@@ -458,16 +482,20 @@ class HotelController extends Controller
         return response()->json([
             "code" => 200,
             "status" => "success",
-            "message" => "Room updated successfully",
+            "message" => "Ruangan berhasil diubah",
         ]);
     }
 
     public function deleteRoom($id)
     {
-        $room = Room::where("hotel_id", auth()->id())->find($id);
+        $room = Room::find($id);
 
         if (!$room) {
             throw new NotFoundError("Room tidak ditemukan");
+        }
+
+        if ($room->hotel->user_id !== auth()->id()) {
+            throw new AuthorizationError("Anda tidak berhak menghapus ruangan ini");
         }
 
         $room->delete();
@@ -475,7 +503,7 @@ class HotelController extends Controller
         return response()->json([
             "code" => 200,
             "status" => "success",
-            "message" => "Room deleted successfully",
+            "message" => "Ruangan berhasil dihapus",
         ]);
     }
 }

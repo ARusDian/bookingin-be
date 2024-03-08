@@ -80,6 +80,44 @@ Route::middleware('auth:sanctum')->group(function() {
                 });
             });
         });
+
+        Route::prefix('airline')->group(function() {
+            Route::controller(Partner\AirlineController::class)->group(function() {
+                Route::get('/get', 'getAirlines');
+                Route::post('/create', 'createAirline');
+                Route::put('/edit/{id}', 'editAirline');
+                Route::delete('/delete/{id}', 'deleteAirline');
+
+                Route::prefix('type')->group(function() {
+                    Route::get('/get', 'getPlaneTypes');
+                    Route::post('/create', 'createPlaneType');
+                    Route::put('/edit/{id}', 'editPlaneType');
+                    Route::delete('/delete/{id}', 'deletePlaneType');
+                });
+
+                Route::prefix('plane')->group(function() {
+                    Route::get('/get', 'getPlanes');
+                    Route::post('/create', 'createPlane');
+                    Route::put('/edit/{id}', 'editPlane');
+                    Route::delete('/delete/{id}', 'deletePlane');
+
+                    Route::prefix('seat')->group(function() {
+                        Route::get('/get', 'getPlaneSeats');
+                        Route::post('/create', 'createPlaneSeat');
+                        Route::put('/edit/{id}', 'editPlaneSeat');
+                        Route::delete('/delete/{id}', 'deletePlaneSeat');
+                    });
+
+                    Route::prefix('flight')->group(function() {
+                        Route::get('/get', 'getPlaneFlights');
+                        Route::post('/create', 'createPlaneFlight');
+                        Route::put('/edit/{id}', 'editPlaneFlight');
+                        Route::delete('/delete/{id}', 'deletePlaneFlight');
+                    });
+                });
+
+            });
+        });
     });
 
     Route::prefix('admin')->group(function() {
