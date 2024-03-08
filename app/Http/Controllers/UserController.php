@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Exceptions\AuthenticationError;
 use App\Exceptions\InvariantError;
+use App\Models\User;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -12,7 +13,27 @@ class UserController extends Controller
 {
     public function register(Request $request)
     {
+        $request->validate([
+            'name' => 'required',
+            'email' => 'required|email|unique:users',
+            'password' => 'required',
+            'phone' => 'required|unique:users,phone',
+        ]);
 
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => bcrypt($request->password),
+            'phone' => $request->phone,
+        ]);
+
+        $user->assignRole("USER");
+
+        return response()->json([
+            "code" => 201,
+            "status" => "success",
+            "message" => "Registrasi berhasil"
+        ], 201);
     }
 
     public function login(Request $request)
@@ -30,16 +51,12 @@ class UserController extends Controller
             throw new AuthenticationError("Email atau Password salah");
         }
 
-        if ($request->user()->expired_date < now()) {
-            throw new AuthenticationError("Akun anda tidak aktif");
-        }
-
         $token = $request->user()->createToken("API_TOKEN")->plainTextToken;
 
         return response()->json([
+            "code" => 200,
             "status" => "success",
             "data" => [
-                "is_new" => $request->user()->is_new,
                 "token" => $token
             ]
         ]);

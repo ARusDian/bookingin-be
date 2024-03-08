@@ -2,8 +2,8 @@
 
 namespace App\Models\User;
 
-use App\Models\Airlane\PlaneFlight;
-use App\Models\Airlane\PlaneSeat;
+use App\Models\Airline\PlaneFlight;
+use App\Models\Airline\PlaneSeat;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;

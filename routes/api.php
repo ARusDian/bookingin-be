@@ -1,5 +1,11 @@
 <?php
 
+use App\Http\Controllers\AirlineController;
+use App\Http\Controllers\User;
+use App\Http\Controllers\Partner;
+use App\Http\Controllers\Admin;
+use App\Http\Controllers\HotelController;
+use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -14,6 +20,45 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+Route::controller(UserController::class)->group(function() {
+    Route::post('/register', 'register');
+    Route::post('/login', 'login');
+});
+
+Route::prefix('airline')->group(function() {
+    Route::controller(AirlineController::class)->group(function() {
+        Route::get('/get', 'get');
+        Route::get('/get/{id}', 'show');
+    });
+});
+
+Route::prefix('hotel')->group(function() {
+    Route::controller(HotelController::class)->group(function() {
+        Route::get('/get', 'get');
+        Route::get('/get/{id}', 'show');
+    });
+});
+
+Route::middleware('auth:sanctum')->group(function() {
+    Route::prefix('user')->group(function() {
+        Route::controller(User\UserController::class)->group(function() {
+            Route::get('/profile', 'getProfile');
+        });
+    });
+
+    Route::prefix('partner')->group(function() {
+        Route::controller(Partner\PartnerController::class)->group(function() {
+            Route::get('/get', 'get');
+        });
+    });
+
+    Route::prefix('admin')->group(function() {
+        Route::prefix('user')->group(function() {
+            Route::controller(Admin\UserController::class)->group(function() {
+                Route::get('/get', 'get');
+                Route::post('/create', 'create');
+                Route::put('/edit/{id}', 'edit');
+            });
+        });
+    });
 });

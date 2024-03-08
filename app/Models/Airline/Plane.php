@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models\Airlane;
+namespace App\Models\Airline;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -16,9 +16,9 @@ class Plane extends Model
         return $this->belongsTo(PlaneType::class);
     }
 
-    public function airlane()
+    public function airline()
     {
-        return $this->belongsTo(Airlane::class);
+        return $this->belongsTo(Airline::class);
     }
 
     public function flights()

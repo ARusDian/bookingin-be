@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Models\Airlane;
+namespace App\Models\Airline;
 
 use App\Models\User\FlightTicket;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class PlaneFlight extends Model
+class PlaneSeat extends Model
 {
     use HasFactory;
 
