@@ -54,6 +54,13 @@ class Handler extends ExceptionHandler
                     "message" => $e->getMessage(),
                 ], $e->getCode());
                 break;
+            case $e instanceof \Spatie\Permission\Exceptions\UnauthorizedException:
+                return response()->json([
+                    "code" => 403,
+                    "status" => "fail",
+                    "message" => "Anda tidak berhak mengakses resource ini",
+                ], 403);
+                break;
             case $e instanceof ValidationException:
                 return response()->json([
                     "code" => 400,
@@ -65,7 +72,7 @@ class Handler extends ExceptionHandler
                 return response()->json([
                     "code" => 404,
                     "status" => "fail",
-                    "message" => "URL Not Found",
+                    "message" => "URL Tidak Ditemukan",
                 ], 404);
                 break;
             case $e instanceof MethodNotAllowedHttpException:
@@ -102,7 +109,7 @@ class Handler extends ExceptionHandler
                 return response()->json([
                     "code" => 500,
                     "status" => "error",
-                    "message" => "Something Went Wrong, Please Contact Administrator",
+                    "message" => "Terjadi kesalahan, silahkan coba beberapa saat lagi",
                 ], 500);
                 break;
         }

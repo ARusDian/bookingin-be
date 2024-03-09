@@ -13,7 +13,7 @@ class Plane extends Model
 
     public function type()
     {
-        return $this->belongsTo(PlaneType::class);
+        return $this->belongsTo(PlaneType::class, 'plane_type_id', 'id');
     }
 
     public function airline()

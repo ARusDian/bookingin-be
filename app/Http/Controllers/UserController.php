@@ -51,13 +51,15 @@ class UserController extends Controller
             throw new AuthenticationError("Email atau Password salah");
         }
 
-        $token = $request->user()->createToken("API_TOKEN")->plainTextToken;
+        $token = $request->user()->createToken("API_TOKEN", ['*'], now()->addHours(12));
+        $expireTime = $token->accessToken->expires_at->toDateTimeString();
 
         return response()->json([
             "code" => 200,
             "status" => "success",
             "data" => [
-                "token" => $token
+                "token" => $token->plainTextToken,
+                "expires_at" => $expireTime,
             ]
         ]);
     }

@@ -604,6 +604,7 @@ class AirlineController extends Controller
     {
         $request->validate([
             'plane_id' => 'required',
+            'last_check_in' => 'required|date_format:Y-m-d H:i|before:date:departure_time',
             'departure_time' => 'required|date_format:Y-m-d H:i',
             'arrival_time' => 'required|date_format:Y-m-d H:i|after:date:departure_time',
             'departure_airport' => 'required',
@@ -629,6 +630,7 @@ class AirlineController extends Controller
 
         PlaneFlight::create([
             'plane_id' => $request->plane_id,
+            'last_check_in' => $request->last_check_in,
             'departure_time' => $request->departure_time,
             'arrival_time' => $request->arrival_time,
             'departure_airport' => $request->departure_airport,
@@ -646,6 +648,7 @@ class AirlineController extends Controller
     public function editPlaneFlight(Request $request, $id)
     {
         $request->validate([
+            'last_check_in' => 'required|date_format:Y-m-d H:i|before:date:departure_time',
             'departure_time' => 'required|date_format:Y-m-d H:i',
             'arrival_time' => 'required|date_format:Y-m-d H:i|after:date:departure_time',
             'departure_airport' => 'required',
@@ -676,6 +679,7 @@ class AirlineController extends Controller
         }
 
         $flight->update([
+            'last_check_in' => $request->last_check_in,
             'departure_time' => $request->departure_time,
             'arrival_time' => $request->arrival_time,
             'departure_airport' => $request->departure_airport,

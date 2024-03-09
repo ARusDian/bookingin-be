@@ -47,6 +47,7 @@ return new class extends Migration
         Schema::create('plane_flights', function (Blueprint $table) {
             $table->id();
             $table->foreignId('plane_id')->constrained('planes');
+            $table->datetime('last_check_in');
             $table->datetime('departure_time');
             $table->datetime('arrival_time');
             $table->string('departure_airport');

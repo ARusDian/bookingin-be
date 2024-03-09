@@ -4,11 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Exceptions\NotFoundError;
 use App\Models\Hotel\Hotel;
+use App\Models\Hotel\Room;
 use Illuminate\Http\Request;
 
 class HotelController extends Controller
 {
-    public function get(Request $request)
+    public function getHotel(Request $request)
     {
         $request->validate([
             "page" => "nullable|integer|min:1",
@@ -40,9 +41,9 @@ class HotelController extends Controller
         ]);
     }
 
-    public function show($id)
+    public function showHotel($id)
     {
-        $hotel = Hotel::find($id);
+        $hotel = Hotel::with('rooms.type')->find($id);
 
         if (!$hotel) {
             throw new NotFoundError("Hotel not found");
@@ -52,6 +53,21 @@ class HotelController extends Controller
             "code" => 200,
             "status" => "success",
             "data" => $hotel
+        ]);
+    }
+
+    public function showHotelRoom($id, $roomId)
+    {
+        $room = Room::with('hotel', 'type', 'reservations')->find($roomId);
+
+        if (!$room) {
+            throw new NotFoundError("Room not found");
+        }
+
+        return response()->json([
+            "code" => 200,
+            "status" => "success",
+            "data" => $room
         ]);
     }
 }

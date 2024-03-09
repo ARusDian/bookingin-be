@@ -19,12 +19,7 @@ class Room extends Model
 
     public function type()
     {
-        return $this->belongsTo(RoomType::class);
-    }
-
-    public function facilities()
-    {
-        return $this->belongsToMany(RoomFacility::class);
+        return $this->belongsTo(RoomType::class, 'room_type_id', 'id');
     }
 
     public function reservations()

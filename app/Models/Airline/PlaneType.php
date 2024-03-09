@@ -15,4 +15,9 @@ class PlaneType extends Model
     {
         return $this->belongsTo(Airline::class);
     }
+
+    public function planes()
+    {
+        return $this->hasMany(Plane::class);
+    }
 }

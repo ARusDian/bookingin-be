@@ -2,9 +2,13 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Exceptions\NotFoundError;
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Utils\Constants;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class UserController extends Controller
 {
@@ -86,7 +90,11 @@ class UserController extends Controller
             "role" => "required|string|in:admin,partner,user",
         ]);
 
-        $user = User::findOrFail($id);
+        $user = User::find($id);
+
+        if (!$user) {
+            throw new NotFoundError('User tidak ditemukan');
+        }
 
         $user->update([
             'name' => $request->name,
@@ -100,6 +108,103 @@ class UserController extends Controller
             "code" => 200,
             "status" => "success",
             "data" => "User berhasil diubah",
+        ]);
+    }
+
+    public function topup(Request $request, $id)
+    {
+        $request->validate([
+            'amount' => 'required|integer|min:1',
+        ]);
+
+        $user = User::find($id);
+
+        if (!$user) {
+            throw new NotFoundError('User tidak ditemukan');
+        }
+
+        DB::transaction(function () use ($user, $request) {
+            $user->update([
+                'balance' => $user->balance + $request->amount,
+            ]);
+
+            $user->transactions()->create([
+                'type' => Constants::TRANSACTION_TYPE['IN'],
+                'amount' => $request->amount,
+                'description' => "Topup saldo " . Carbon::now()->format("d/m/Y H:i:s"),
+            ]);
+        });
+
+        return response()->json([
+            "code" => 200,
+            "status" => "success",
+            "data" => "Saldo berhasil ditambahkan sebesar Rp. " . number_format($request->amount, 0, ",", "."),
+        ]);
+    }
+
+    public function withdraw(Request $request, $id)
+    {
+        $request->validate([
+            'amount' => 'required|integer|min:1',
+        ]);
+
+        $user = User::find($id);
+
+        if (!$user) {
+            throw new NotFoundError('User tidak ditemukan');
+        }
+
+        if ($user->balance < $request->amount) {
+            throw new NotFoundError('Saldo tidak cukup');
+        }
+
+        DB::transaction(function () use ($user, $request) {
+            $user->update([
+                'balance' => $user->balance - $request->amount,
+            ]);
+
+            $user->transactions()->create([
+                'type' => Constants::TRANSACTION_TYPE['OUT'],
+                'amount' => $request->amount,
+                'description' => "Penarikan saldo " . Carbon::now()->format("d/m/Y H:i:s"),
+            ]);
+        });
+
+        return response()->json([
+            "code" => 200,
+            "status" => "success",
+            "data" => "Saldo berhasil ditarik sebesar Rp. " . number_format($request->amount, 0, ",", "."),
+        ]);
+    }
+
+    public function getTransaction(Request $request, $id)
+    {
+        $request->validate([
+            "page" => "nullable|integer|min:1",
+            "item" => "nullable|integer|min:1",
+        ]);
+
+        $page = $request->input("page", 1);
+        $item = $request->input("item", 10);
+
+        $user = User::find($id);
+
+        if (!$user) {
+            throw new NotFoundError('User tidak ditemukan');
+        }
+
+        $transactions = $user->transactions()->paginate($item, ["*"], "page", $page);
+
+        return response()->json([
+            "code" => 200,
+            "status" => "success",
+            "data" => $transactions->items(),
+            "meta" => [
+                "currentPage" => $page,
+                "item" => $item,
+                "totalItems" => $transactions->total(),
+                "totalPages" => $transactions->lastPage(),
+            ],
         ]);
     }
 }
