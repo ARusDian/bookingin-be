@@ -26,11 +26,11 @@ class FlightTicket extends Model
 
     public function flight()
     {
-        return $this->belongsTo(PlaneFlight::class);
+        return $this->belongsTo(PlaneFlight::class, 'plane_flight_id', 'id');
     }
 
     public function seat()
     {
-        return $this->belongsTo(PlaneSeat::class);
+        return $this->belongsTo(PlaneSeat::class, 'plane_seat_id', 'id');
     }
 }

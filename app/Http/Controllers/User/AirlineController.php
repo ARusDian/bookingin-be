@@ -81,4 +81,34 @@ class AirlineController extends Controller
             'message' => "Pembelian Tiket $code Berhasil",
         ]);
     }
+
+    public function getTicketList()
+    {
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+        $tickets = $user->tickets()->with('flight.plane.airline')->get();
+
+        return response()->json([
+            'code' => 200,
+            'status' => 'success',
+            'data' => $tickets,
+        ]);
+    }
+
+    public function showTicket($id)
+    {
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+        $ticket = $user->tickets()->with('transaction', 'seat', 'flight.plane.airline')->find($id);
+
+        if (!$ticket) {
+            throw new NotFoundError('Tiket tidak ditemukan');
+        }
+
+        return response()->json([
+            'code' => 200,
+            'status' => 'success',
+            'data' => $ticket,
+        ]);
+    }
 }

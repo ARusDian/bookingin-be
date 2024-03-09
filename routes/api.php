@@ -48,18 +48,23 @@ Route::prefix('hotel')->group(function () {
 Route::middleware('auth:sanctum')->group(function () {
     Route::controller(User\UserController::class)->group(function () {
         Route::get('/me', 'getProfile');
+        Route::get('/transaction', 'getTransaction');
     });
 
     Route::prefix('user')->middleware(['role:USER'])->group(function () {
-        Route::prefix('flight')->group(function () {
+        Route::prefix('ticket')->group(function () {
             Route::controller(User\AirlineController::class)->group(function () {
                 Route::post('/buy', 'buyTicket');
+                Route::get('/get', 'getTicketList');
+                Route::get('/get/{id}', 'showTicket');
             });
         });
 
-        Route::prefix('hotel')->group(function () {
+        Route::prefix('reservation')->group(function () {
             Route::controller(User\HotelController::class)->group(function () {
-                Route::post('/reservation', 'reservation');
+                Route::post('/buy', 'reservation');
+                Route::get('/get', 'getReservations');
+                Route::get('/get/{id}', 'showReservation');
             });
         });
     });

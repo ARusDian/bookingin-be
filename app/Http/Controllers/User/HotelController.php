@@ -66,13 +66,13 @@ class HotelController extends Controller
             $transaction = $user->transactions()->create([
                 'type' => Constants::TRANSACTION_TYPE['OUT'],
                 'amount' => $totalPrice,
-                'description' => "Pemesanan Kamar Hotel {$room->hotel->name} - {$room->type->name} dari {$checkIn->format('d/m/Y')} sampai {$checkOut->format('d/m/Y')}",
+                'description' => "Pemesanan Kamar {$room->name} Hotel {$room->hotel->name} - {$room->type->name} dari {$checkIn->format('d/m/Y')} sampai {$checkOut->format('d/m/Y')}",
             ]);
 
             $room->hotel->user->transactions()->create([
                 'type' => Constants::TRANSACTION_TYPE['IN'],
                 'amount' => $totalPrice,
-                'description' => "Pemesanan Kamar Hotel {$room->hotel->name} - {$room->type->name} dari {$checkIn->format('d/m/Y')} sampai {$checkOut->format('d/m/Y')}",
+                'description' => "Pemesanan Kamar {$room->name} Hotel {$room->hotel->name} - {$room->type->name} dari {$checkIn->format('d/m/Y')} sampai {$checkOut->format('d/m/Y')}",
             ]);
 
             $room->reservations()->create([
@@ -89,6 +89,36 @@ class HotelController extends Controller
             'code' => 200,
             'status' => 'success',
             'message' => "Pemesanan Kamar {$room->name} berhasil dengan kode $code",
+        ]);
+    }
+
+    public function getReservations()
+    {
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+        $tickets = $user->reservation()->with('hotel', 'room')->get();
+
+        return response()->json([
+            'code' => 200,
+            'status' => 'success',
+            'data' => $tickets,
+        ]);
+    }
+
+    public function showReservation($id)
+    {
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+        $ticket = $user->reservation()->with('transaction', 'hotel', 'room.type.facilities')->find($id);
+
+        if (!$ticket) {
+            throw new NotFoundError('Pemesanan tidak ditemukan');
+        }
+
+        return response()->json([
+            'code' => 200,
+            'status' => 'success',
+            'data' => $ticket,
         ]);
     }
 }

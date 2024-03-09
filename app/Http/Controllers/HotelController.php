@@ -58,7 +58,7 @@ class HotelController extends Controller
 
     public function showHotelRoom($id, $roomId)
     {
-        $room = Room::with('hotel', 'type', 'reservations')->find($roomId);
+        $room = Room::with('hotel', 'type.facilities', 'reservations')->find($roomId);
 
         if (!$room) {
             throw new NotFoundError("Room not found");

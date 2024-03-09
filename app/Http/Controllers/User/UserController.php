@@ -23,4 +23,18 @@ class UserController extends Controller
             "data" => $user
         ]);
     }
+
+    public function getTransaction()
+    {
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+
+        $transactions = $user->transactions()->get();
+
+        return response()->json([
+            "code" => 200,
+            "status" => "success",
+            "data" => $transactions
+        ]);
+    }
 }

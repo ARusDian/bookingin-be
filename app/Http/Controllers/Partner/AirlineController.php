@@ -313,6 +313,16 @@ class AirlineController extends Controller
             throw new AuthorizationError("Anda tidak berhak mengakses airline ini");
         }
 
+        $type = PlaneType::find($request->plane_type_id);
+
+        if (!$type) {
+            throw new NotFoundError("Tipe Pesawat tidak ditemukan");
+        }
+
+        if ($type->airline_id !== $request->airline_id) {
+            throw new NotFoundError("Tipe Pesawat tidak ditemukan di airline ini");
+        }
+
         Plane::create([
             'airline_id' => $request->airline_id,
             'plane_type_id' => $request->plane_type_id,
