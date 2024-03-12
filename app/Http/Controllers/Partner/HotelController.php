@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Partner;
 use App\Exceptions\AuthorizationError;
 use App\Exceptions\NotFoundError;
 use App\Http\Controllers\Controller;
+use App\Http\Services\LogService;
 use App\Models\Hotel\Hotel;
 use App\Models\Hotel\Room;
 use App\Models\Hotel\RoomFacility;
@@ -35,6 +36,8 @@ class HotelController extends Controller
 
         $data = $hotels->paginate($item, ["*"], "page", $page);
 
+        LogService::create("User melakukan pencarian hotel miliknya");
+
         return response()->json([
             "code" => 200,
             "status" => "success",
@@ -63,6 +66,8 @@ class HotelController extends Controller
             'description' => $request->description,
         ]);
 
+        LogService::create("User membuat hotel baru");
+
         return response()->json([
             "code" => 201,
             "status" => "success",
@@ -90,6 +95,8 @@ class HotelController extends Controller
             'description' => $request->description,
         ]);
 
+        LogService::create("User mengubah hotel dengan id $id");
+
         return response()->json([
             "code" => 200,
             "status" => "success",
@@ -106,6 +113,8 @@ class HotelController extends Controller
         }
 
         $hotel->delete();
+
+        LogService::create("User menghapus hotel dengan id $id");
 
         return response()->json([
             "code" => 200,
@@ -145,6 +154,8 @@ class HotelController extends Controller
 
         $data = $facilities->paginate($item, ["*"], "page", $page);
 
+        LogService::create("User melihat fasilitas hotel dengan id $request->hotel_id");
+
         return response()->json([
             "code" => 200,
             "status" => "success",
@@ -182,6 +193,8 @@ class HotelController extends Controller
             'description' => $request->description,
         ]);
 
+        LogService::create("User membuat fasilitas baru di hotel dengan id $request->hotel_id");
+
         return response()->json([
             "code" => 201,
             "status" => "success",
@@ -211,6 +224,8 @@ class HotelController extends Controller
             'description' => $request->description,
         ]);
 
+        LogService::create("User mengubah fasilitas dengan id $id");
+
         return response()->json([
             "code" => 200,
             "status" => "success",
@@ -231,6 +246,8 @@ class HotelController extends Controller
         }
 
         $facility->delete();
+
+        LogService::create("User menghapus fasilitas dengan id $id");
 
         return response()->json([
             "code" => 200,
@@ -269,6 +286,8 @@ class HotelController extends Controller
         }
 
         $data = $types->paginate($item, ["*"], "page", $page);
+
+        LogService::create("User melihat tipe ruangan hotel dengan id $request->hotel_id");
 
         return response()->json([
             "code" => 200,
@@ -319,6 +338,8 @@ class HotelController extends Controller
             }
         });
 
+        LogService::create("User membuat tipe ruangan baru di hotel dengan id $request->hotel_id");
+
         return response()->json([
             "code" => 201,
             "status" => "success",
@@ -355,6 +376,8 @@ class HotelController extends Controller
             $type->facilities()->sync($request->facilities);
         }
 
+        LogService::create("User mengubah tipe ruangan dengan id $id");
+
         return response()->json([
             "code" => 200,
             "status" => "success",
@@ -376,6 +399,8 @@ class HotelController extends Controller
 
         $type->facilities()->detach();
         $type->delete();
+
+        LogService::create("User menghapus tipe ruangan dengan id $id");
 
         return response()->json([
             "code" => 200,
@@ -404,6 +429,8 @@ class HotelController extends Controller
         }
 
         $data = $rooms->paginate($item, ["*"], "page", $page);
+
+        LogService::create("User melihat ruangan hotel dengan id $request->hotel_id");
 
         return response()->json([
             "code" => 200,
@@ -450,6 +477,8 @@ class HotelController extends Controller
             'description' => $request->description,
         ]);
 
+        LogService::create("User membuat ruangan baru di hotel dengan id $request->hotel_id");
+
         return response()->json([
             "code" => 201,
             "status" => "success",
@@ -479,6 +508,8 @@ class HotelController extends Controller
             'description' => $request->description,
         ]);
 
+        LogService::create("User mengubah ruangan dengan id $id");
+
         return response()->json([
             "code" => 200,
             "status" => "success",
@@ -499,6 +530,8 @@ class HotelController extends Controller
         }
 
         $room->delete();
+
+        LogService::create("User menghapus ruangan dengan id $id");
 
         return response()->json([
             "code" => 200,

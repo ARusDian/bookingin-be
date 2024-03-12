@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('address');
             $table->string('description');
+            $table->softDeletes()->index();
             $table->timestamps();
         });
 
@@ -25,6 +26,7 @@ return new class extends Migration
             $table->foreignId('airline_id')->constrained('airlines');
             $table->string('name');
             $table->string('description');
+            $table->softDeletes()->index();
             $table->timestamps();
         });
 
@@ -34,6 +36,7 @@ return new class extends Migration
             $table->foreignId('plane_type_id')->constrained('plane_types');
             $table->string('name');
             $table->string('description');
+            $table->softDeletes()->index();
             $table->timestamps();
         });
 
@@ -41,6 +44,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('plane_id')->constrained('planes');
             $table->string('name');
+            $table->softDeletes()->index();
             $table->timestamps();
         });
 
@@ -53,6 +57,7 @@ return new class extends Migration
             $table->string('departure_airport');
             $table->string('arrival_airport');
             $table->integer('price');
+            $table->softDeletes()->index();
             $table->timestamps();
         });
     }

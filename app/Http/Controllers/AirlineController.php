@@ -3,11 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Exceptions\NotFoundError;
+use App\Http\Services\LogService;
 use App\Models\Airline\Airline;
 use App\Models\Airline\PlaneFlight;
 use App\Models\Airline\PlaneSeat;
 use App\Models\User\FlightTicket;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class AirlineController extends Controller
@@ -31,6 +33,10 @@ class AirlineController extends Controller
 
         $data = $airlines->paginate($item, ["*"], "page", $page);
 
+        if (Auth::check()) {
+            LogService::create("User melakukan pencarian airline");
+        }
+
         return response()->json([
             "code" => 200,
             "status" => "success",
@@ -50,6 +56,10 @@ class AirlineController extends Controller
 
         if (!$airline) {
             throw new NotFoundError("Airline not found");
+        }
+
+        if (Auth::check()) {
+            LogService::create("User melihat airline dengan ids $id");
         }
 
         return response()->json([
@@ -94,6 +104,10 @@ class AirlineController extends Controller
             ->join('planes', 'plane_flights.plane_id', '=', 'planes.id')
             ->paginate($item, ["*"], "page", $page);
 
+        if (Auth::check()) {
+            LogService::create("User mencari penerbangan");
+        }
+
         return response()->json([
             "code" => 200,
             "status" => "success",
@@ -129,6 +143,10 @@ class AirlineController extends Controller
                 "available" => !$ticket,
             ];
         });
+
+        if (Auth::check()) {
+            LogService::create("User melihat penerbangan dengan ids $id");
+        }
 
         return response()->json([
             "code" => 200,

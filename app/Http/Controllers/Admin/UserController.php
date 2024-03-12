@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Exceptions\NotFoundError;
 use App\Http\Controllers\Controller;
+use App\Http\Services\LogService;
 use App\Models\User;
 use App\Utils\Constants;
 use Carbon\Carbon;
@@ -37,6 +38,8 @@ class UserController extends Controller
         }
 
         $data = $users->paginate($item, ["*"], "page", $page);
+
+        LogService::create("User melakukan pencarian user");
 
         return response()->json([
             "code" => 200,
@@ -74,6 +77,8 @@ class UserController extends Controller
 
         $user->assignRole($request->role);
 
+        LogService::create("User membuat user baru");
+
         return response()->json([
             "code" => 201,
             "status" => "success",
@@ -87,6 +92,7 @@ class UserController extends Controller
             'name' => 'required',
             'email' => 'required|email|unique:users,email,' . $id,
             'phone' => 'required|unique:users,phone,' . $id,
+            'password' => 'nullable',
             "role" => "required|string|in:admin,partner,user",
         ]);
 
@@ -102,12 +108,43 @@ class UserController extends Controller
             'phone' => $request->phone,
         ]);
 
+        if ($request->has("password")) {
+            $user->update([
+                'password' => bcrypt($request->password),
+            ]);
+        }
+
         $user->syncRoles([$request->role]);
+
+        LogService::create("User mengubah user dengan id $id");
 
         return response()->json([
             "code" => 200,
             "status" => "success",
             "data" => "User berhasil diubah",
+        ]);
+    }
+
+    public function delete($id)
+    {
+        $user = User::find($id);
+
+        if (!$user) {
+            throw new NotFoundError('User tidak ditemukan');
+        }
+
+        if ($user->getRoleNames()->first() === "ADMIN") {
+            throw new NotFoundError('Tidak dapat menghapus admin!');
+        }
+
+        $user->delete();
+
+        LogService::create("User menghapus user dengan id $id");
+
+        return response()->json([
+            "code" => 200,
+            "status" => "success",
+            "data" => "User berhasil dihapus",
         ]);
     }
 
@@ -134,6 +171,8 @@ class UserController extends Controller
                 'description' => "Topup saldo " . Carbon::now()->format("d/m/Y H:i:s"),
             ]);
         });
+
+        LogService::create("User melakukan topup saldo sebesar Rp. " . number_format($request->amount, 0, ",", "."));
 
         return response()->json([
             "code" => 200,
@@ -170,6 +209,8 @@ class UserController extends Controller
             ]);
         });
 
+        LogService::create("User melakukan penarikan saldo sebesar Rp. " . number_format($request->amount, 0, ",", "."));
+
         return response()->json([
             "code" => 200,
             "status" => "success",
@@ -194,6 +235,8 @@ class UserController extends Controller
         }
 
         $transactions = $user->transactions()->paginate($item, ["*"], "page", $page);
+
+        LogService::create("User melihat riwayat transaksi saldo");
 
         return response()->json([
             "code" => 200,

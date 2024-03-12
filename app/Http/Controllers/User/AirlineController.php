@@ -5,7 +5,9 @@ namespace App\Http\Controllers\User;
 use App\Exceptions\InvariantError;
 use App\Exceptions\NotFoundError;
 use App\Http\Controllers\Controller;
+use App\Http\Services\LogService;
 use App\Models\Airline\PlaneFlight;
+use App\Models\Log;
 use App\Utils\Constants;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -75,6 +77,8 @@ class AirlineController extends Controller
             ]);
         });
 
+        LogService::create("User membeli tiket penerbangan pesawat {$flight->plane->name} - $flight->departure_airport ke $flight->arrival_airport dengan kode $code");
+
         return response()->json([
             'code' => 200,
             'status' => 'success',
@@ -87,6 +91,8 @@ class AirlineController extends Controller
         /** @var \App\Models\User $user */
         $user = Auth::user();
         $tickets = $user->tickets()->with('flight.plane.airline')->get();
+
+        LogService::create("User melihat list tiket");
 
         return response()->json([
             'code' => 200,
@@ -104,6 +110,8 @@ class AirlineController extends Controller
         if (!$ticket) {
             throw new NotFoundError('Tiket tidak ditemukan');
         }
+
+        LogService::create("User melihat detail ticket dengan ids $id");
 
         return response()->json([
             'code' => 200,

@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('address');
             $table->string('description');
+            $table->softDeletes()->index();
             $table->timestamps();
         });
 
@@ -26,6 +27,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('description');
             $table->integer('price');
+            $table->softDeletes()->index();
             $table->timestamps();
         });
 
@@ -34,6 +36,7 @@ return new class extends Migration
             $table->foreignId('hotel_id')->constrained('hotels');
             $table->string('name');
             $table->string('description');
+            $table->softDeletes()->index();
             $table->timestamps();
         });
 
@@ -41,6 +44,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('room_type_id')->constrained('room_types');
             $table->foreignId('room_facility_id')->constrained('room_facilities');
+            $table->softDeletes()->index();
             $table->timestamps();
         });
 
@@ -50,6 +54,7 @@ return new class extends Migration
             $table->foreignId('room_type_id')->constrained('room_types');
             $table->string('name');
             $table->string('description');
+            $table->softDeletes()->index();
             $table->timestamps();
 
             $table->unique(['hotel_id', 'name']);

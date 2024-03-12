@@ -5,6 +5,7 @@ namespace App\Http\Controllers\User;
 use App\Exceptions\InvariantError;
 use App\Exceptions\NotFoundError;
 use App\Http\Controllers\Controller;
+use App\Http\Services\LogService;
 use App\Models\Hotel\Room;
 use App\Utils\Constants;
 use Carbon\Carbon;
@@ -85,6 +86,8 @@ class HotelController extends Controller
             ]);
         });
 
+        LogService::create("User melakukan pemesanan kamar hotel {$room->hotel->name}");
+
         return response()->json([
             'code' => 200,
             'status' => 'success',
@@ -97,6 +100,8 @@ class HotelController extends Controller
         /** @var \App\Models\User $user */
         $user = Auth::user();
         $tickets = $user->reservation()->with('hotel', 'room')->get();
+
+        LogService::create("User melihat list pemesanan");
 
         return response()->json([
             'code' => 200,
@@ -114,6 +119,8 @@ class HotelController extends Controller
         if (!$ticket) {
             throw new NotFoundError('Pemesanan tidak ditemukan');
         }
+
+        LogService::create("User melihat detail pemesanan dengan ids $id");
 
         return response()->json([
             'code' => 200,

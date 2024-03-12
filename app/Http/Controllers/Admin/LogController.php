@@ -3,11 +3,10 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Http\Services\LogService;
-use App\Models\User\Transaction;
+use App\Models\Log;
 use Illuminate\Http\Request;
 
-class TransactionController extends Controller
+class LogController extends Controller
 {
     public function get(Request $request)
     {
@@ -15,30 +14,27 @@ class TransactionController extends Controller
             "page" => "nullable|integer|min:1",
             "item" => "nullable|integer|min:1",
             "search" => "nullable|string",
-            "role" => "nullable|string|in:partner,user",
+            "user_id" => "nullable|integer",
         ]);
 
         $page = $request->input("page", 1);
         $item = $request->input("item", 10);
 
-        $transactions = Transaction::query();
+        $logs = Log::query();
 
         if ($request->has("search")) {
-            $transactions->where(function ($query) use ($request) {
-                $query->where("id", "LIKE", "%{$request->input("search")}%")
-                    ->orWhere("user_id", "LIKE", "%{$request->input("search")}%");
+            $logs->where(function ($query) use ($request) {
+                $query->where("user_id", "LIKE", "%{$request->input("search")}%")
+                    ->orWhere("name", "LIKE", "%{$request->input("search")}%")
+                    ->orWhere("description", "LIKE", "%{$request->input("search")}%");
             });
         }
 
-        if ($request->has("role")) {
-            $transactions->whereHas("user.roles", function ($query) use ($request) {
-                $query->where("name", $request->role);
-            });
+        if ($request->has("user_id")) {
+            $logs->where("user_id", $request->input("user_id"));
         }
 
-        $data = $transactions->paginate($item, ["*"], "page", $page);
-
-        LogService::create("User melakukan pencarian transaksi");
+        $data = $logs->paginate($item, ["*"], "page", $page);
 
         return response()->json([
             "code" => 200,

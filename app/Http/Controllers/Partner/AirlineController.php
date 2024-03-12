@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Partner;
 use App\Exceptions\AuthorizationError;
 use App\Exceptions\NotFoundError;
 use App\Http\Controllers\Controller;
+use App\Http\Services\LogService;
 use App\Models\Airline\Airline;
 use App\Models\Airline\Plane;
 use App\Models\Airline\PlaneFlight;
@@ -34,6 +35,8 @@ class AirlineController extends Controller
 
         $data = $airline->paginate($item, ["*"], "page", $page);
 
+        LogService::create("User melakukan pencarian airline miliknya");
+
         return response()->json([
             "code" => 200,
             "status" => "success",
@@ -62,6 +65,8 @@ class AirlineController extends Controller
             'description' => $request->description,
         ]);
 
+        LogService::create("User membuat airline baru");
+
         return response()->json([
             "code" => 201,
             "status" => "success",
@@ -89,6 +94,8 @@ class AirlineController extends Controller
             'description' => $request->description,
         ]);
 
+        LogService::create("User mengubah airline dengan id $id");
+
         return response()->json([
             "code" => 200,
             "status" => "success",
@@ -105,6 +112,8 @@ class AirlineController extends Controller
         }
 
         $airline->delete();
+
+        LogService::create("User menghapus airline dengan id $id");
 
         return response()->json([
             "code" => 200,
@@ -144,6 +153,8 @@ class AirlineController extends Controller
 
         $data = $types->paginate($item, ["*"], "page", $page);
 
+        LogService::create("User melakukan pencarian tipe pesawat milik airline dengan id $request->airline_id");
+
         return response()->json([
             "code" => 200,
             "status" => "success",
@@ -181,6 +192,8 @@ class AirlineController extends Controller
             'description' => $request->description,
         ]);
 
+        LogService::create("User membuat tipe pesawat baru");
+
         return response()->json([
             "code" => 201,
             "status" => "success",
@@ -216,6 +229,8 @@ class AirlineController extends Controller
             'description' => $request->description,
         ]);
 
+        LogService::create("User mengubah tipe pesawat dengan id $id");
+
         return response()->json([
             "code" => 200,
             "status" => "success",
@@ -242,6 +257,8 @@ class AirlineController extends Controller
         }
 
         $type->delete();
+
+        LogService::create("User menghapus tipe pesawat dengan id $id");
 
         return response()->json([
             "code" => 200,
@@ -280,6 +297,8 @@ class AirlineController extends Controller
         }
 
         $data = $planes->paginate($item, ["*"], "page", $page);
+
+        LogService::create("User melakukan pencarian pesawat milik airline dengan id $request->airline_id");
 
         return response()->json([
             "code" => 200,
@@ -330,6 +349,8 @@ class AirlineController extends Controller
             'description' => $request->description,
         ]);
 
+        LogService::create("User membuat pesawat baru");
+
         return response()->json([
             "code" => 201,
             "status" => "success",
@@ -365,6 +386,8 @@ class AirlineController extends Controller
             'description' => $request->description,
         ]);
 
+        LogService::create("User mengubah pesawat dengan id $id");
+
         return response()->json([
             "code" => 200,
             "status" => "success",
@@ -391,6 +414,8 @@ class AirlineController extends Controller
         }
 
         $plane->delete();
+
+        LogService::create("User menghapus pesawat dengan id $id");
 
         return response()->json([
             "code" => 200,
@@ -435,6 +460,8 @@ class AirlineController extends Controller
         }
 
         $data = $seats->paginate($item, ["*"], "page", $page);
+
+        LogService::create("User melakukan pencarian kursi pesawat milik pesawat dengan id $request->plane_id");
 
         return response()->json([
             "code" => 200,
@@ -481,6 +508,8 @@ class AirlineController extends Controller
 
         PlaneSeat::insert($data);
 
+        LogService::create("User membuat kursi pesawat baru");
+
         return response()->json([
             "code" => 201,
             "status" => "success",
@@ -520,6 +549,8 @@ class AirlineController extends Controller
             'name' => $request->name,
         ]);
 
+        LogService::create("User mengubah kursi pesawat dengan id $id");
+
         return response()->json([
             "code" => 200,
             "status" => "success",
@@ -552,6 +583,8 @@ class AirlineController extends Controller
         }
 
         $seat->delete();
+
+        LogService::create("User menghapus kursi pesawat dengan id $id");
 
         return response()->json([
             "code" => 200,
@@ -596,6 +629,8 @@ class AirlineController extends Controller
         }
 
         $data = $flights->paginate($item, ["*"], "page", $page);
+
+        LogService::create("User melakukan pencarian penerbangan milik pesawat dengan id $request->plane_id");
 
         return response()->json([
             "code" => 200,
@@ -648,6 +683,8 @@ class AirlineController extends Controller
             'price' => $request->price,
         ]);
 
+        LogService::create("User membuat penerbangan baru");
+
         return response()->json([
             "code" => 201,
             "status" => "success",
@@ -697,6 +734,8 @@ class AirlineController extends Controller
             'price' => $request->price,
         ]);
 
+        LogService::create("User mengubah penerbangan dengan id $id");
+
         return response()->json([
             "code" => 200,
             "status" => "success",
@@ -729,6 +768,8 @@ class AirlineController extends Controller
         }
 
         $flight->delete();
+
+        LogService::create("User menghapus penerbangan dengan id $id");
 
         return response()->json([
             "code" => 200,

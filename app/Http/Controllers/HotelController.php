@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Exceptions\NotFoundError;
+use App\Http\Services\LogService;
 use App\Models\Hotel\Hotel;
 use App\Models\Hotel\Room;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class HotelController extends Controller
 {
@@ -28,6 +30,10 @@ class HotelController extends Controller
 
         $data = $hotels->paginate($item, ["*"], "page", $page);
 
+        if (Auth::check()) {
+            LogService::create("User melakukan pencarian hotel");
+        }
+
         return response()->json([
             "code" => 200,
             "status" => "success",
@@ -49,6 +55,10 @@ class HotelController extends Controller
             throw new NotFoundError("Hotel not found");
         }
 
+        if (Auth::check()) {
+            LogService::create("User melihat hotel dengan ids $id");
+        }
+
         return response()->json([
             "code" => 200,
             "status" => "success",
@@ -62,6 +72,10 @@ class HotelController extends Controller
 
         if (!$room) {
             throw new NotFoundError("Room not found");
+        }
+
+        if (Auth::check()) {
+            LogService::create("User melihat ruangan hotel dengan ids $roomId");
         }
 
         return response()->json([

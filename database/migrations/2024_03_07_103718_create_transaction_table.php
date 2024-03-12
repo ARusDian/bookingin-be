@@ -18,6 +18,7 @@ return new class extends Migration
             $table->enum('type', Constants::TRANSACTION_TYPE);
             $table->integer('amount');
             $table->string('description');
+            $table->softDeletes()->index();
             $table->timestamps();
         });
 
@@ -30,6 +31,7 @@ return new class extends Migration
             $table->foreignId('room_id')->constrained('rooms');
             $table->date('check_in');
             $table->date('check_out');
+            $table->softDeletes()->index();
             $table->timestamps();
         });
 
@@ -40,6 +42,7 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained('users');
             $table->foreignId('plane_flight_id')->constrained('plane_flights');
             $table->foreignId('plane_seat_id')->constrained('plane_seats');
+            $table->softDeletes()->index();
             $table->timestamps();
 
             $table->unique(['plane_flight_id', 'plane_seat_id']);

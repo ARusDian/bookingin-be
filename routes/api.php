@@ -69,7 +69,7 @@ Route::middleware('auth:sanctum')->group(function () {
         });
     });
 
-    Route::prefix('partner')->middleware(['role:PARTNER'])->group(function () {
+    Route::prefix('partner')->middleware(['role:PARTNER|ADMIN'])->group(function () {
         Route::controller(Partner\PartnerController::class)->group(function () {
             Route::get('/get', 'get');
         });
@@ -140,6 +140,15 @@ Route::middleware('auth:sanctum')->group(function () {
                 });
             });
         });
+
+        Route::prefix('transaction')->group(function () {
+            Route::controller(Partner\TransactionController::class)->group(function () {
+                Route::get('/ticket', 'getTicket');
+                Route::get('/ticket/{id}', 'getTicketDetail');
+                Route::get('/reservation', 'getReservation');
+                Route::get('/reservation/{id}', 'getReservationDetail');
+            });
+        });
     });
 
     Route::prefix('admin')->middleware(['role:ADMIN'])->group(function () {
@@ -148,6 +157,7 @@ Route::middleware('auth:sanctum')->group(function () {
                 Route::get('/get', 'get');
                 Route::post('/create', 'create');
                 Route::put('/edit/{id}', 'edit');
+                Route::delete('/delete/{id}', 'delete');
                 Route::post('/topup/{id}', 'topup');
                 Route::post('/withdraw/{id}', 'withdraw');
                 Route::get('/transaction/{id}', 'getTransaction');
@@ -156,6 +166,12 @@ Route::middleware('auth:sanctum')->group(function () {
 
         Route::prefix('transaction')->group(function () {
             Route::controller(Admin\TransactionController::class)->group(function () {
+                Route::get('/get', 'get');
+            });
+        });
+
+        Route::prefix('log')->group(function () {
+            Route::controller(Admin\LogController::class)->group(function () {
                 Route::get('/get', 'get');
             });
         });

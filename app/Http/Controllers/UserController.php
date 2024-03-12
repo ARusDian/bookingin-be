@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Exceptions\AuthenticationError;
 use App\Exceptions\InvariantError;
+use App\Http\Services\LogService;
 use App\Models\User;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
@@ -53,6 +54,8 @@ class UserController extends Controller
 
         $token = $request->user()->createToken("API_TOKEN", ['*'], now()->addHours(12));
         $expireTime = $token->accessToken->expires_at->toDateTimeString();
+
+        LogService::create("User melakukan login");
 
         return response()->json([
             "code" => 200,
