@@ -146,7 +146,7 @@ class HotelController extends Controller
             throw new AuthorizationError("Anda tidak berhak mengakses fasilitas ini");
         }
 
-        $facilities = RoomFacility::where("id", $request->hotel_id);
+        $facilities = RoomFacility::where("hotel_id", $request->hotel_id);
 
         if ($request->has("search")) {
             $facilities->where("name", "LIKE", "%{$request->input("search")}%");
