@@ -50,6 +50,23 @@ class AirlineController extends Controller
         ]);
     }
 
+    public function getAirlineById($id)
+    {
+        $airline = Airline::with('types', 'planes')->where("user_id", auth()->id())->find($id);
+
+        if (!$airline) {
+            throw new NotFoundError("Airline tidak ditemukan");
+        }
+
+        LogService::create("User melihat detail airline dengan id $id");
+
+        return response()->json([
+            "code" => 200,
+            "status" => "success",
+            "data" => $airline,
+        ]);
+    }
+
     public function createAirline(Request $request)
     {
         $request->validate([

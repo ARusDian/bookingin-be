@@ -77,6 +77,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::prefix('hotel')->group(function () {
             Route::controller(Partner\HotelController::class)->group(function () {
                 Route::get('/get', 'getHotel');
+                Route::get('/get/{id}', 'getHotelById');
                 Route::post('/create', 'createHotel');
                 Route::put('/edit/{id}', 'editHotel');
                 Route::delete('/delete/{id}', 'deleteHotel');
@@ -107,6 +108,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::prefix('airline')->group(function () {
             Route::controller(Partner\AirlineController::class)->group(function () {
                 Route::get('/get', 'getAirlines');
+                Route::get('/get/{id}', 'getAirlineById');
                 Route::post('/create', 'createAirline');
                 Route::put('/edit/{id}', 'editAirline');
                 Route::delete('/delete/{id}', 'deleteAirline');
@@ -155,6 +157,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::prefix('user')->group(function () {
             Route::controller(Admin\UserController::class)->group(function () {
                 Route::get('/get', 'get');
+                Route::get('/get/{id}', 'show');
                 Route::post('/create', 'create');
                 Route::put('/edit/{id}', 'edit');
                 Route::delete('/delete/{id}', 'delete');

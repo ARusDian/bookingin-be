@@ -58,6 +58,25 @@ class UserController extends Controller
         ]);
     }
 
+    public function show($id)
+    {
+        $user = User::with('transactions')->find($id);
+
+        if (!$user) {
+            throw new NotFoundError('User tidak ditemukan');
+        }
+
+        LogService::create("User melihat detail user dengan id $id");
+
+        return response()->json([
+            "code" => 200,
+            "status" => "success",
+            "data" => array_merge($user->toArray(), [
+                'role' => $user->roles->first()->name,
+            ]),
+        ]);
+    }
+
     public function create(Request $request)
     {
         $request->validate([

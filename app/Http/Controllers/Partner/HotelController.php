@@ -51,6 +51,23 @@ class HotelController extends Controller
         ]);
     }
 
+    public function getHotelById($id)
+    {
+        $hotel = Hotel::with('types', 'facilities', 'rooms', 'reservations')->where("user_id", auth()->id())->find($id);
+
+        if (!$hotel) {
+            throw new NotFoundError("Hotel tidak ditemukan");
+        }
+
+        LogService::create("User melihat hotel dengan id $id");
+
+        return response()->json([
+            "code" => 200,
+            "status" => "success",
+            "data" => $hotel,
+        ]);
+    }
+
     public function createHotel(Request $request)
     {
         $request->validate([
