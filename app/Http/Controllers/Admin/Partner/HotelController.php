@@ -159,10 +159,6 @@ class HotelController extends Controller
             throw new NotFoundError("Hotel tidak ditemukan");
         }
 
-        if ($hotel->user_id !== $partner) {
-            throw new AuthorizationError("Anda tidak berhak mengakses fasilitas ini");
-        }
-
         $facilities = RoomFacility::where("hotel_id", $request->hotel_id);
 
         if ($request->has("search")) {
@@ -200,10 +196,6 @@ class HotelController extends Controller
             throw new NotFoundError("Hotel tidak ditemukan");
         }
 
-        if ($hotel->user_id !== $partner) {
-            throw new AuthorizationError("Anda tidak berhak menambah fasilitas di hotel ini");
-        }
-
         RoomFacility::create([
             'hotel_id' => $request->hotel_id,
             'name' => $request->name,
@@ -232,10 +224,6 @@ class HotelController extends Controller
             throw new NotFoundError("Facility tidak ditemukan");
         }
 
-        if ($facility->hotel->user_id !== $partner) {
-            throw new AuthorizationError("Anda tidak berhak mengubah fasilitas ini");
-        }
-
         $facility->update([
             'name' => $request->name,
             'description' => $request->description,
@@ -256,10 +244,6 @@ class HotelController extends Controller
 
         if (!$facility) {
             throw new NotFoundError("Facility tidak ditemukan");
-        }
-
-        if ($facility->hotel->user_id !== $partner) {
-            throw new AuthorizationError("Anda tidak berhak menghapus fasilitas ini");
         }
 
         $facility->delete();
@@ -292,9 +276,6 @@ class HotelController extends Controller
             throw new NotFoundError("Hotel tidak ditemukan");
         }
 
-        if ($hotel->user_id !== $partner) {
-            throw new AuthorizationError("Anda tidak berhak mengakses fasilitas ini");
-        }
 
         $types = RoomType::where("hotel_id", $request->hotel_id);
 
@@ -336,10 +317,6 @@ class HotelController extends Controller
             throw new NotFoundError("Hotel tidak ditemukan");
         }
 
-        if ($hotel->user_id !== $partner) {
-            throw new AuthorizationError("Anda tidak berhak menambah ruangan di hotel ini");
-        }
-
         DB::transaction(function () use ($request) {
             $type = RoomType::create([
                 'hotel_id' => $request->hotel_id,
@@ -379,10 +356,6 @@ class HotelController extends Controller
             throw new NotFoundError("Room type tidak ditemukan");
         }
 
-        if ($type->hotel->user_id !== $partner) {
-            throw new AuthorizationError("Anda tidak berhak mengedit fasilitas");
-        }
-
         $type->update([
             'name' => $request->name,
             'description' => $request->description,
@@ -408,10 +381,6 @@ class HotelController extends Controller
 
         if (!$type) {
             throw new NotFoundError("Room type tidak ditemukan");
-        }
-
-        if ($type->hotel->user_id !== $partner) {
-            throw new AuthorizationError("Anda tidak berhak menghapus fasilitas ini");
         }
 
         $type->facilities()->detach();
@@ -477,10 +446,6 @@ class HotelController extends Controller
             throw new NotFoundError("Hotel tidak ditemukan");
         }
 
-        if ($hotel->user_id !== $partner) {
-            throw new AuthorizationError("Anda tidak berhak menambah ruangan di hotel ini");
-        }
-
         $type = $hotel->types()->find($request->type_id);
 
         if (!$type) {
@@ -516,10 +481,6 @@ class HotelController extends Controller
             throw new NotFoundError("Room tidak ditemukan");
         }
 
-        if ($room->hotel->user_id !== $partner) {
-            throw new AuthorizationError("Anda tidak berhak mengubah ruangan ini");
-        }
-
         $room->update([
             'name' => $request->name,
             'description' => $request->description,
@@ -540,10 +501,6 @@ class HotelController extends Controller
 
         if (!$room) {
             throw new NotFoundError("Room tidak ditemukan");
-        }
-
-        if ($room->hotel->user_id !== $partner) {
-            throw new AuthorizationError("Anda tidak berhak menghapus ruangan ini");
         }
 
         $room->delete();

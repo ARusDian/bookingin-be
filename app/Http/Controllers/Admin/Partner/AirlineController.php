@@ -158,10 +158,6 @@ class AirlineController extends Controller
             throw new NotFoundError("Airline tidak ditemukan");
         }
 
-        if ($airline->user_id !== $partner) {
-            throw new AuthorizationError("Anda tidak berhak mengakses airline ini");
-        }
-
         $types = PlaneType::where("airline_id", $request->airline_id);
 
         if ($request->has("search")) {
@@ -199,10 +195,6 @@ class AirlineController extends Controller
             throw new NotFoundError("Airline tidak ditemukan");
         }
 
-        if ($airline->user_id !== $partner) {
-            throw new AuthorizationError("Anda tidak berhak mengakses airline ini");
-        }
-
         PlaneType::create([
             'airline_id' => $request->airline_id,
             'name' => $request->name,
@@ -237,10 +229,6 @@ class AirlineController extends Controller
             throw new NotFoundError("Airline tidak ditemukan");
         }
 
-        if ($airline->user_id !== $partner) {
-            throw new AuthorizationError("Anda tidak berhak mengakses airline ini");
-        }
-
         $type->update([
             'name' => $request->name,
             'description' => $request->description,
@@ -267,10 +255,6 @@ class AirlineController extends Controller
 
         if (!$airline) {
             throw new NotFoundError("Airline tidak ditemukan");
-        }
-
-        if ($airline->user_id !== $partner) {
-            throw new AuthorizationError("Anda tidak berhak mengakses airline ini");
         }
 
         $type->delete();
@@ -301,10 +285,6 @@ class AirlineController extends Controller
 
         if (!$airline) {
             throw new NotFoundError("Airline tidak ditemukan");
-        }
-
-        if ($airline->user_id !== $partner) {
-            throw new AuthorizationError("Anda tidak berhak mengakses airline ini");
         }
 
         $planes = Plane::where("airline_id", $request->airline_id);
@@ -345,18 +325,10 @@ class AirlineController extends Controller
             throw new NotFoundError("Airline tidak ditemukan");
         }
 
-        if ($airline->user_id !== $partner) {
-            throw new AuthorizationError("Anda tidak berhak mengakses airline ini");
-        }
-
         $type = PlaneType::find($request->plane_type_id);
 
         if (!$type) {
             throw new NotFoundError("Tipe Pesawat tidak ditemukan");
-        }
-
-        if ($type->airline_id !== $request->airline_id) {
-            throw new NotFoundError("Tipe Pesawat tidak ditemukan di airline ini");
         }
 
         Plane::create([
@@ -394,10 +366,6 @@ class AirlineController extends Controller
             throw new NotFoundError("Airline tidak ditemukan");
         }
 
-        if ($airline->user_id !== $partner) {
-            throw new AuthorizationError("Anda tidak berhak mengakses airline ini");
-        }
-
         $plane->update([
             'name' => $request->name,
             'description' => $request->description,
@@ -424,10 +392,6 @@ class AirlineController extends Controller
 
         if (!$airline) {
             throw new NotFoundError("Airline tidak ditemukan");
-        }
-
-        if ($airline->user_id !== $partner) {
-            throw new AuthorizationError("Anda tidak berhak mengakses airline ini");
         }
 
         $plane->delete();
@@ -464,10 +428,6 @@ class AirlineController extends Controller
 
         if (!$airline) {
             throw new NotFoundError("Airline tidak ditemukan");
-        }
-
-        if ($airline->user_id !== $partner) {
-            throw new AuthorizationError("Anda tidak berhak mengakses airline ini");
         }
 
         $seats = PlaneSeat::where("plane_id", $request->plane_id);
@@ -512,10 +472,6 @@ class AirlineController extends Controller
             throw new NotFoundError("Airline tidak ditemukan");
         }
 
-        if ($airline->user_id !== $partner) {
-            throw new AuthorizationError("Anda tidak berhak mengakses airline ini");
-        }
-
         $data = collect($request->name)->map(function ($item) use ($request) {
             return [
                 'plane_id' => $request->plane_id,
@@ -558,10 +514,6 @@ class AirlineController extends Controller
             throw new NotFoundError("Airline tidak ditemukan");
         }
 
-        if ($airline->user_id !== $partner) {
-            throw new AuthorizationError("Anda tidak berhak mengakses airline ini");
-        }
-
         $seat->update([
             'name' => $request->name,
         ]);
@@ -593,10 +545,6 @@ class AirlineController extends Controller
 
         if (!$airline) {
             throw new NotFoundError("Airline tidak ditemukan");
-        }
-
-        if ($airline->user_id !== $partner) {
-            throw new AuthorizationError("Anda tidak berhak mengakses airline ini");
         }
 
         $seat->delete();
@@ -633,10 +581,6 @@ class AirlineController extends Controller
 
         if (!$airline) {
             throw new NotFoundError("Airline tidak ditemukan");
-        }
-
-        if ($airline->user_id !== $partner) {
-            throw new AuthorizationError("Anda tidak berhak mengakses airline ini");
         }
 
         $flights = PlaneFlight::where("plane_id", $request->plane_id);
@@ -684,10 +628,6 @@ class AirlineController extends Controller
 
         if (!$airline) {
             throw new NotFoundError("Airline tidak ditemukan");
-        }
-
-        if ($airline->user_id !== $partner) {
-            throw new AuthorizationError("Anda tidak berhak mengakses airline ini");
         }
 
         PlaneFlight::create([
@@ -738,10 +678,6 @@ class AirlineController extends Controller
             throw new NotFoundError("Airline tidak ditemukan");
         }
 
-        if ($airline->user_id !== $partner) {
-            throw new AuthorizationError("Anda tidak berhak mengakses airline ini");
-        }
-
         $flight->update([
             'last_check_in' => $request->last_check_in,
             'departure_time' => $request->departure_time,
@@ -778,10 +714,6 @@ class AirlineController extends Controller
 
         if (!$airline) {
             throw new NotFoundError("Airline tidak ditemukan");
-        }
-
-        if ($airline->user_id !== $partner) {
-            throw new AuthorizationError("Anda tidak berhak mengakses airline ini");
         }
 
         $flight->delete();
