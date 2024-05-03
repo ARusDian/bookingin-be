@@ -445,7 +445,7 @@ class HotelController extends Controller
             $rooms->where("name", "LIKE", "%{$request->input("search")}%");
         }
 
-        $data = $rooms->paginate($item, ["*"], "page", $page);
+        $data = $rooms->with('type')->paginate($item, ["*"], "page", $page);
 
         LogService::create("User melihat ruangan hotel dengan id $request->hotel_id");
 
