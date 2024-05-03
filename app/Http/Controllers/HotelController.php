@@ -28,7 +28,7 @@ class HotelController extends Controller
             $hotels->where("name", "LIKE", "%{$request->input("search")}%");
         }
 
-        $data = $hotels->paginate($item, ["*"], "page", $page);
+        $data = $hotels->with('user')->paginate($item, ["*"], "page", $page);
 
         if (Auth::check()) {
             LogService::create("User melakukan pencarian hotel");

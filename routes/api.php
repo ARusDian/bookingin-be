@@ -4,6 +4,7 @@ use App\Http\Controllers\AirlineController;
 use App\Http\Controllers\User;
 use App\Http\Controllers\Partner;
 use App\Http\Controllers\Admin;
+use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\HotelController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
@@ -19,6 +20,11 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
+
+Route::controller(AuthController::class)->group(function () {
+    Route::post('/forgot-password', 'forgotPassword');
+    Route::post('/reset-password', 'resetPassword');
+});
 
 Route::controller(UserController::class)->group(function () {
     Route::post('/register', 'register');

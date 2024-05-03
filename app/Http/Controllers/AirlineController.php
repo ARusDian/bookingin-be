@@ -31,7 +31,7 @@ class AirlineController extends Controller
             $airlines->where("name", "LIKE", "%{$request->input("search")}%");
         }
 
-        $data = $airlines->paginate($item, ["*"], "page", $page);
+        $data = $airlines->with('user')->paginate($item, ["*"], "page", $page);
 
         if (Auth::check()) {
             LogService::create("User melakukan pencarian airline");
@@ -52,7 +52,7 @@ class AirlineController extends Controller
 
     public function showAirline($id)
     {
-        $airline = Airline::with('planes.type')->find($id);
+        $airline = Airline::with('planes.type', 'user')->find($id);
 
         if (!$airline) {
             throw new NotFoundError("Airline not found");
