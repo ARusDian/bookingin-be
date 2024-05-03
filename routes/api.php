@@ -184,5 +184,85 @@ Route::middleware('auth:sanctum')->group(function () {
                 Route::get('/get', 'get');
             });
         });
+
+        Route::prefix('partner/{partner}')->group(function () {
+            Route::prefix('hotel')->group(function () {
+                Route::controller(Admin\Partner\HotelController::class)->group(function () {
+                    Route::get('/get', 'getHotel');
+                    Route::get('/get/{id}', 'getHotelById');
+                    Route::post('/create', 'createHotel');
+                    Route::put('/edit/{id}', 'editHotel');
+                    Route::delete('/delete/{id}', 'deleteHotel');
+
+                    Route::prefix('facility')->group(function () {
+                        Route::get('/get', 'getFacilities');
+                        Route::post('/create', 'createFacility');
+                        Route::put('/edit/{id}', 'editFacility');
+                        Route::delete('/delete/{id}', 'deleteFacility');
+                    });
+
+                    Route::prefix('type')->group(function () {
+                        Route::get('/get', 'getRoomType');
+                        Route::post('/create', 'createRoomType');
+                        Route::put('/edit/{id}', 'editRoomType');
+                        Route::delete('/delete/{id}', 'deleteRoomType');
+                    });
+
+                    Route::prefix('room')->group(function () {
+                        Route::get('/get', 'getRoom');
+                        Route::post('/create', 'createRoom');
+                        Route::put('/edit/{id}', 'editRoom');
+                        Route::delete('/delete/{id}', 'deleteRoom');
+                    });
+                });
+            });
+
+            Route::prefix('airline')->group(function () {
+                Route::controller(Admin\Partner\AirlineController::class)->group(function () {
+                    Route::get('/get', 'getAirlines');
+                    Route::get('/get/{id}', 'getAirlineById');
+                    Route::post('/create', 'createAirline');
+                    Route::put('/edit/{id}', 'editAirline');
+                    Route::delete('/delete/{id}', 'deleteAirline');
+
+                    Route::prefix('type')->group(function () {
+                        Route::get('/get', 'getPlaneTypes');
+                        Route::post('/create', 'createPlaneType');
+                        Route::put('/edit/{id}', 'editPlaneType');
+                        Route::delete('/delete/{id}', 'deletePlaneType');
+                    });
+
+                    Route::prefix('plane')->group(function () {
+                        Route::get('/get', 'getPlanes');
+                        Route::post('/create', 'createPlane');
+                        Route::put('/edit/{id}', 'editPlane');
+                        Route::delete('/delete/{id}', 'deletePlane');
+
+                        Route::prefix('seat')->group(function () {
+                            Route::get('/get', 'getPlaneSeats');
+                            Route::post('/create', 'createPlaneSeat');
+                            Route::put('/edit/{id}', 'editPlaneSeat');
+                            Route::delete('/delete/{id}', 'deletePlaneSeat');
+                        });
+
+                        Route::prefix('flight')->group(function () {
+                            Route::get('/get', 'getPlaneFlights');
+                            Route::post('/create', 'createPlaneFlight');
+                            Route::put('/edit/{id}', 'editPlaneFlight');
+                            Route::delete('/delete/{id}', 'deletePlaneFlight');
+                        });
+                    });
+                });
+            });
+
+            Route::prefix('transaction')->group(function () {
+                Route::controller(Admin\Partner\TransactionController::class)->group(function () {
+                    Route::get('/ticket', 'getTicket');
+                    Route::get('/ticket/{id}', 'getTicketDetail');
+                    Route::get('/reservation', 'getReservation');
+                    Route::get('/reservation/{id}', 'getReservationDetail');
+                });
+            });
+        });
     });
 });
