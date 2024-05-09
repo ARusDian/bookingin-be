@@ -96,7 +96,7 @@ class TransactionController extends Controller
         $page = $request->input("page", 1);
         $item = $request->input("item", 10);
 
-        $data = Reservation::whereHas('room.hotel', function ($query, $partner) {
+        $data = Reservation::whereHas('room.hotel', function ($query) use ($partner) {
             $query->where('user_id', $partner);
         });
 

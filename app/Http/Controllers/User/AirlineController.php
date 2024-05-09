@@ -9,6 +9,7 @@ use App\Http\Services\LogService;
 use App\Models\Airline\PlaneFlight;
 use App\Models\Log;
 use App\Utils\Constants;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -29,6 +30,10 @@ class AirlineController extends Controller
 
         if (!$flight) {
             throw new NotFoundError('Penerbangan tidak ditemukan');
+        }
+
+        if (Carbon::parse($flight->last_check_in)->subDays(7) < now()) {
+            throw new InvariantError('Pembelian Tiket masih ditutup, akan dibuka tanggal ' . Carbon::parse($flight->last_check_in)->subDays(7)->format('d F Y H:i:s'));
         }
 
         if ($flight->last_check_in < now()) {
@@ -83,6 +88,53 @@ class AirlineController extends Controller
             'code' => 200,
             'status' => 'success',
             'message' => "Pembelian Tiket $code Berhasil",
+        ]);
+    }
+
+    public function cancel($id)
+    {
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+        $ticket = $user->tickets()->with('transaction', 'seat', 'flight.plane.airline')->find($id);
+
+        if (!$ticket) {
+            throw new NotFoundError('Tiket tidak ditemukan');
+        }
+
+        if (Carbon::parse($ticket->flight->last_check_in)->subDays(2) < now()) {
+            throw new InvariantError('Pembatalan Tiket sudah ditutup');
+        }
+
+        if ($ticket->flight->last_check_in < now()) {
+            throw new InvariantError('Pembatalan Tiket sudah ditutup');
+        }
+
+        DB::transaction(function () use ($user, $ticket) {
+            $user->update([
+                'balance' => $user->balance + $ticket->flight->price,
+            ]);
+
+            $user->transactions()->create([
+                'type' => Constants::TRANSACTION_TYPE['IN'],
+                'amount' => $ticket->flight->price,
+                'description' => "Pembatalan Tiket Penerbangan Pesawat {$ticket->flight->plane->name} - {$ticket->flight->departure_airport} ke {$ticket->flight->arrival_airport}",
+            ]);
+
+            $ticket->flight->plane->airline->user->transactions()->create([
+                'type' => Constants::TRANSACTION_TYPE['OUT'],
+                'amount' => $ticket->flight->price,
+                'description' => "Pembatalan Tiket Penerbangan Pesawat {$ticket->flight->plane->name} - {$ticket->flight->departure_airport} ke {$ticket->flight->arrival_airport}",
+            ]);
+
+            $ticket->delete();
+        });
+
+        LogService::create("User membatalkan tiket penerbangan pesawat {$ticket->flight->plane->name} - {$ticket->flight->departure_airport} ke {$ticket->flight->arrival_airport} dengan kode {$ticket->code}");
+
+        return response()->json([
+            'code' => 200,
+            'status' => 'success',
+            'message' => "Pembatalan Tiket {$ticket->code} Berhasil",
         ]);
     }
 

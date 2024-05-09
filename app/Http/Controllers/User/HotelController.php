@@ -43,6 +43,10 @@ class HotelController extends Controller
             throw new InvariantError('Tanggal check out tidak valid');
         }
 
+        if (now()->diffInDays($checkIn) > 7) {
+            throw new InvariantError('Maksimal pemesanan 7 hari sebelum check in');
+        }
+
         if ($checkOut->diffInDays($checkIn) < 1) {
             throw new InvariantError('Minimal pemesanan 1 hari');
         }
@@ -92,6 +96,54 @@ class HotelController extends Controller
             'code' => 200,
             'status' => 'success',
             'message' => "Pemesanan Kamar {$room->name} berhasil dengan kode $code",
+        ]);
+    }
+
+    public function cancel($id)
+    {
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+        $ticket = $user->reservation()->with('transaction', 'hotel', 'room')->find($id);
+
+        if (!$ticket) {
+            throw new NotFoundError('Pemesanan tidak ditemukan');
+        }
+
+        if ($ticket->check_in->isPast()) {
+            throw new InvariantError('Pemesanan sudah berlangsung');
+        }
+
+        if (Carbon::parse($ticket->check_in)->subDays(2) < now()) {
+            throw new InvariantError('Pembatalan Pemasanan sudah ditutup');
+        }
+
+        DB::transaction(function () use ($user, $ticket) {
+            $user->update([
+                'balance' => $user->balance + $ticket->transaction->amount,
+            ]);
+
+            $user->transactions()->create([
+                'type' => Constants::TRANSACTION_TYPE['IN'],
+                'amount' => $ticket->transaction->amount,
+                'description' => "Pembatalan Pemesanan Kamar {$ticket->room->name} Hotel {$ticket->hotel->name} dari {$ticket->check_in->format('d/m/Y')} sampai {$ticket->check_out->format('d/m/Y')}",
+            ]);
+
+            $ticket->hotel->user->transactions()->create([
+                'type' => Constants::TRANSACTION_TYPE['OUT'],
+                'amount' => $ticket->transaction->amount,
+                'description' => "Pembatalan Pemesanan Kamar {$ticket->room->name} Hotel {$ticket->hotel->name} dari {$ticket->check_in->format('d/m/Y')} sampai {$ticket->check_out->format('d/m/Y')}",
+            ]);
+
+            $ticket->transaction->delete();
+            $ticket->delete();
+        });
+
+        LogService::create("User membatalkan pemesanan kamar hotel {$ticket->hotel->name}");
+
+        return response()->json([
+            'code' => 200,
+            'status' => 'success',
+            'message' => "Pembatalan Pemesanan Kamar {$ticket->room->name} berhasil",
         ]);
     }
 

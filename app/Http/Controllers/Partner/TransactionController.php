@@ -98,7 +98,7 @@ class TransactionController extends Controller
 
         $data = Reservation::whereHas('room.hotel', function ($query) {
             $query->where('user_id', auth()->id());
-        })->with('user');
+        })->with('user', 'room');
 
         if ($request->has("search")) {
             $data->where(function ($query) use ($request) {

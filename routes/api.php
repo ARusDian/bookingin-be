@@ -63,6 +63,7 @@ Route::middleware('auth:sanctum')->group(function () {
                 Route::post('/buy', 'buyTicket');
                 Route::get('/get', 'getTicketList');
                 Route::get('/get/{id}', 'showTicket');
+                Route::post('/cancel/{id}', 'cancel');
             });
         });
 
@@ -71,6 +72,7 @@ Route::middleware('auth:sanctum')->group(function () {
                 Route::post('/buy', 'reservation');
                 Route::get('/get', 'getReservations');
                 Route::get('/get/{id}', 'showReservation');
+                Route::post('/cancel/{id}', 'cancel');
             });
         });
     });
