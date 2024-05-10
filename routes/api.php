@@ -159,6 +159,12 @@ Route::middleware('auth:sanctum')->group(function () {
                 Route::get('/reservation/{id}', 'getReservationDetail');
             });
         });
+
+        Route::prefix('user')->group(function () {
+            Route::controller(Partner\UserController::class)->group(function () {
+                Route::get('/get/{id}', 'show');
+            });
+        });
     });
 
     Route::prefix('admin')->middleware(['role:ADMIN'])->group(function () {
