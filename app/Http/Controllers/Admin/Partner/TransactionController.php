@@ -68,7 +68,7 @@ class TransactionController extends Controller
     {
         $data = FlightTicket::whereHas('flight.plane.airline', function ($query) use ($partner) {
             $query->where('user_id', $partner);
-        })->find($id);
+        })->with('user')->find($id);
 
         if (!$data) {
             throw new NotFoundError('Tiket tidak ditemukan');
@@ -98,7 +98,7 @@ class TransactionController extends Controller
 
         $data = Reservation::whereHas('room.hotel', function ($query) use ($partner) {
             $query->where('user_id', $partner);
-        });
+        })->with('user', 'room');
 
         if ($request->has("search")) {
             $data->where(function ($query) use ($request) {
