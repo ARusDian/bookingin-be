@@ -64,7 +64,7 @@ class TransactionController extends Controller
         ]);
     }
 
-    public function getTicketDetail($id, string $partner)
+    public function getTicketDetail(string $partner, $id)
     {
         $data = FlightTicket::whereHas('flight.plane.airline', function ($query) use ($partner) {
             $query->where('user_id', $partner);
@@ -136,7 +136,7 @@ class TransactionController extends Controller
         ]);
     }
 
-    public function getReservationDetail($id, string $partner)
+    public function getReservationDetail(string $partner, $id)
     {
         $data = Reservation::whereHas('room.hotel', function ($query, $partner) {
             $query->where('user_id', $partner);

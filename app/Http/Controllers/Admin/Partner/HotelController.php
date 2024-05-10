@@ -51,7 +51,7 @@ class HotelController extends Controller
         ]);
     }
 
-    public function getHotelById($id, string $partner)
+    public function getHotelById(string $partner, $id)
     {
         $hotel = Hotel::with('types', 'facilities', 'rooms', 'reservations')->where("user_id", $partner)->find($id);
 
@@ -121,7 +121,7 @@ class HotelController extends Controller
         ]);
     }
 
-    public function deleteHotel($id, string $partner)
+    public function deleteHotel(string $partner, $id)
     {
         $hotel = Hotel::where("user_id", $partner)->find($id);
 
@@ -238,7 +238,7 @@ class HotelController extends Controller
         ]);
     }
 
-    public function deleteFacility($id, string $partner)
+    public function deleteFacility(string $partner, $id)
     {
         $facility = RoomFacility::find($id);
 
@@ -375,7 +375,7 @@ class HotelController extends Controller
         ]);
     }
 
-    public function deleteRoomType($id, string $partner)
+    public function deleteRoomType(string $partner, $id)
     {
         $type = RoomType::find($id);
 
@@ -495,7 +495,7 @@ class HotelController extends Controller
         ]);
     }
 
-    public function deleteRoom($id, string $partner)
+    public function deleteRoom(string $partner, $id)
     {
         $room = Room::find($id);
 

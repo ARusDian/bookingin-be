@@ -50,7 +50,7 @@ class AirlineController extends Controller
         ]);
     }
 
-    public function getAirlineById($id)
+    public function getAirlineById(string $partner, $id)
     {
         $airline = Airline::with('types', 'planes')->find($id);
 
@@ -243,7 +243,7 @@ class AirlineController extends Controller
         ]);
     }
 
-    public function deletePlaneType($id, string $partner)
+    public function deletePlaneType(string $partner, $id)
     {
         $type = PlaneType::find($id);
 
@@ -380,7 +380,7 @@ class AirlineController extends Controller
         ]);
     }
 
-    public function deletePlane($id, string $partner)
+    public function deletePlane(string $partner, $id)
     {
         $plane = Plane::find($id);
 
@@ -527,7 +527,7 @@ class AirlineController extends Controller
         ]);
     }
 
-    public function deletePlaneSeat($id, string $partner)
+    public function deletePlaneSeat(string $partner, $id)
     {
         $seat = PlaneSeat::find($id);
 
@@ -696,7 +696,7 @@ class AirlineController extends Controller
         ]);
     }
 
-    public function deletePlaneFlight($id, string $partner)
+    public function deletePlaneFlight(string $partner, $id)
     {
         $flight = PlaneFlight::find($id);
 
