@@ -36,8 +36,8 @@ class UserSeeder extends Seeder
             User::create($user);
         });
 
-        User::where("name", "admin")->first()->assignRole("admin");
-        User::where("name", "partner")->first()->assignRole("partner");
-        User::where("name", "user")->first()->assignRole("user");
+        User::where("name", "admin")->first()->assignRole("ADMIN");
+        User::where("name", "partner")->first()->assignRole("PARTNER");
+        User::where("name", "user")->first()->assignRole("USER");
     }
 }
